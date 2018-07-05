@@ -1,0 +1,53 @@
+---
+title: "Análise exploratória dos dados."
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(dplyr)
+library(here)
+```
+
+# Importando os dados
+
+
+```{r message=FALSE, warning=FALSE}
+reclamacoes = readr::read_csv(here::here("data/1-reclamacoes-selecionadas/reclamacoes-avaliadas.csv"))
+avaliacoes = readr::read_csv((here::here("")))
+
+names(reclamacoes)
+```
+
+## Variávies da base de dados.
+
+* `orgao`: refere-se à qual órgão foi direcionada a reclamação
+* `titulo`: o título da reclamação
+* `reclamacao`: o texto da reclamação
+* `id`: o identificador da reclamação
+* `mediana`: a mediana do nível de insatisfação, resultado de avaliações humanas.
+
+# Como é a distribuição do nível de insatisfação para os órgãos analisados?
+
+```{r}
+reclamacoes %>% 
+    group_by(orgao) %>% 
+    ggplot(aes(x = orgao,
+               y = mediana)) +
+    geom_boxplot()
+```
+
+Podemos observar a partir dos boxplots, que as reclamações da ANAC possuem um nível de insatisfação mais alta que as do INSS, vendo que 50% delas possuem insatisfação com mediana acima de 3, enquanto que nas do INSS, 75% estão abaixo de 3.
+
+## Existe alguma relação entre o tamanho da associação e a mediana de insatisfação?
+
+```{r}
+reclamacoes %>% 
+    mutate(reclamacao.length = str_length(reclamacao)) %>% 
+    ggplot(aes(x = orgao,
+               y = reclamacao.length,
+               colour = mediana)) +
+    geom_point()
+```
+
+No gráfico acima, quanto mais claro é um ponto, maior o valor de mediana de insatisfação. Como podemos observar, embora seja possível identificar alguns pontos claros em reclamações mais curtas, vemos que as que possuem um tamanho maior são sempre mais claras. A partir disso, podemos concluir que avaliações mais extensas geralmente possuem um maior valor de insatisfação. E ainda, que as reclamações do *INSS* são em geral menores do que as da *ANAC*.

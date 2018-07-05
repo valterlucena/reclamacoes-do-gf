@@ -17,7 +17,7 @@ theme_set(theme_bw())
 ```{r carrega}
 
 reclamacoes = read_csv(here("data/3-avaliacao-humana/reclamacoes-avaliadas-20180703.csv"))
-sentimentos = read_csv(here("data/5-sentimentos/sentimento.csv"))
+sentimentos = read_csv(here("data/4-estimativa-automatica/sentimento.csv"))
 
 reclamacoes = reclamacoes %>% mutate(comprimento_reclamacao = str_length(reclamacao))
 ```
@@ -42,9 +42,9 @@ Converte polaridades para escala 0-5
 
 ```{r}
 # Faça você mesmo. Crie a variável polaridade_normalizada
-# reclamacoes_l = reclamacoes_l %>% 
-#     group_by(lexico) %>% 
-#     mutate(polaridade_normalizada = ALGOAQUI)
+reclamacoes_l = reclamacoes_l %>% 
+ group_by(lexico) %>% 
+  mutate(polaridade_normalizada = ALGOAQUI)
 ```
 
 Calcula o erro (SSE) por reclamação
