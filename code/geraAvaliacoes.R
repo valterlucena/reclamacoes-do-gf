@@ -2,7 +2,6 @@ library(tidyverse)
 library(rvest)
 library(stringr)
 
-setwd("/Users/raquelvl/Documents/GitHub/reclamacoes-do-gf")
 avaliacoes <- read_csv("data/3-avaliacao-humana/avaliacoes-20180610.csv")
 
 glimpse(avaliacoes)
@@ -30,3 +29,4 @@ reclamacoes <- left_join(reclamacoes.avaliadas, avaliacoes,
                          by = c("id" = "id.reclamacao"))
 
 reclamacoes %>%  write_csv("data/3-avaliacao-humana/reclamacoes-avaliadas-20180703.csv")
+

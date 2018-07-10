@@ -38,7 +38,7 @@ glimpse(reclamacoes)
 ```{r}
 reclamacoes %>% 
     ggplot(mapping = aes(x = palavras_caps)) +  
-    geom_histogram(binwidth = 3, 
+    geom_histogram(binwidth = 5 , 
                    boundary = 0, 
                    color = "salmon", 
                    fill = "white") + 

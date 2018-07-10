@@ -14,14 +14,14 @@ theme_set(theme_bw())
 ```{r carrega}
 reclamacoes = read_csv(here("data/3-avaliacao-humana/reclamacoes-avaliadas-20180703.csv"))
 
-#reclamacoes = reclamacoes_raw %>% 
-#    mutate(
-#        nome_orgao_site = orgao,
-#        orgao = str_split(link, "/") %>% map_chr(~ .[[5]])
-#    ) %>% 
-#    filter(orgao %in% c("inss-ministerio-da-previdencia-social", #"anac-agencia-nacional-de-aviacao-civil")) %>% 
-#    mutate(id = 1:n(), 
-#           grupo_avaliando = id %% 6 + 1) 
+reclamacoes = reclamacoes %>% 
+    mutate(
+        nome_orgao_site = orgao,
+        orgao = str_split(link, "/") %>% map_chr(~ .[[5]])
+    ) %>% 
+    filter(orgao %in% c("inss-ministerio-da-previdencia-social", "anac-agencia-nacional-de-aviacao-civil")) %>% 
+    mutate(id = 1:n(), 
+           grupo_avaliando = id %% 6 + 1) 
 ```
 
 O processo de estimativa será muito baseado em https://sillasgonzaga.github.io/2017-09-23-sensacionalista-pt01/ . 
@@ -66,4 +66,3 @@ sentimentos = palavras_com_sentimento %>%
 sentimentos %>% 
     write_csv(here("data/4-estimativa-automatica/sentimento.csv"))
 ```
-
