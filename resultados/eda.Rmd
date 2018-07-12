@@ -13,7 +13,7 @@ library(here)
 
 
 ```{r message=FALSE, warning=FALSE}
-reclamacoes = readr::read_csv(here::here("data/1-reclamacoes-selecionadas/reclamacoes-avaliadas.csv"))
+reclamacoes = readr::read_csv((here::here("data/3-avaliacao-humana/reclamacoes-avaliadas-20180703.csv")))
 
 names(reclamacoes)
 ```
@@ -32,21 +32,94 @@ names(reclamacoes)
 reclamacoes %>% 
     group_by(orgao) %>% 
     ggplot(aes(x = orgao,
-               y = mediana)) +
+               y = insatisfacao)) +
     geom_boxplot()
 ```
 
-Podemos observar a partir dos boxplots, que as reclamações da ANAC possuem um nível de insatisfação mais alta que as do INSS, vendo que 50% delas possuem insatisfação com mediana acima de 3, enquanto que nas do INSS, 75% estão abaixo de 3.
+Podemos observar a partir dos boxplots, que as reclamações da ANAC possuem um nível de insatisfação mais alta que as do INSS, vendo que 50% delas possuem insatisfação acima de 3, enquanto que nas do INSS, 75% estão abaixo de 3.
 
-## Existe alguma relação entre o tamanho da associação e a mediana de insatisfação?
+## Existe alguma relação entre o tamanho da reclamação e a insatisfação?
 
 ```{r}
 reclamacoes %>% 
     mutate(reclamacao.length = str_length(reclamacao)) %>% 
     ggplot(aes(x = orgao,
                y = reclamacao.length,
-               colour = mediana)) +
+               colour = insatisfacao)) +
     geom_point()
 ```
 
 No gráfico acima, quanto mais claro é um ponto, maior o valor de mediana de insatisfação. Como podemos observar, embora seja possível identificar alguns pontos claros em reclamações mais curtas, vemos que as que possuem um tamanho maior são sempre mais claras. A partir disso, podemos concluir que avaliações mais extensas geralmente possuem um maior valor de insatisfação. E ainda, que as reclamações do *INSS* são em geral menores do que as da *ANAC*.
+
+```{r}
+reclamacoes = reclamacoes %>% 
+    mutate(reclamacao.length = str_length(reclamacao))
+```
+
+
+```{r}
+reclamacoes %>% 
+    ggplot(aes(x = insatisfacao,
+               y = reclamacao.length,
+               colour = orgao)) +
+    geom_point()
+```
+
+Desta outra forma podemos perceber, novamente, uma relação entre a insatisfação e o tamanho da reclamação. Podemos usar a correlação linear entre essas variáveis para quantificar essa relação.
+
+```{r}
+cor(reclamacoes$reclamacao.length, reclamacoes$insatisfacao, method = "pearson")
+```
+
+Pelo valor de correlação, podemos dizer que a associação existe, mas não é muito significativa.
+
+## Há associação entre quantidade de palavras em capslock e a insatisfação?
+
+```{r}
+reclamacoes = reclamacoes %>% 
+    mutate(numero.caps = str_count(reclamacoes$reclamacao, "[A-Z]{2,}"))
+
+reclamacoes %>% 
+    ggplot(aes(x = insatisfacao,
+               y = numero.caps,
+               colour = orgao,
+               size = reclamacao.length)) +
+    geom_point()
+```
+
+Pelo gráfico, notamos que geralmente reclamações com uma quantidade maior de palavras em caps possuem um nivel maior de instatisfação. Utilizando novamente a correlação para medir, temos:
+
+```{r}
+cor(reclamacoes$numero.caps, reclamacoes$insatisfacao, method = "pearson")
+```
+
+Por esse valor, podemos dizer que existe uma associação, mas que ela é fraca.
+
+## Quantas reclamações temos para cada nível de insatisfação?
+
+```{r}
+avaliacoes %>% 
+    group_by(insatisfacao,
+             orgao) %>% 
+    summarise(quantidade = n()) %>% 
+    ungroup() %>% 
+    ggplot(aes(x = insatisfacao,
+               y = quantidade)) +
+    geom_col(color = "#4682B4",
+             fill = "#ADD8E6") +
+    facet_grid(~ orgao)
+```
+
+Vemos que é baixa a quantidade de reclamações com um nível alto de instatisfação, e que a *ANAC* possui uma quantidade maior de reclamações com um nível mais alto de insatisfação.
+
+## Como é o tamanho das reclamações de cada órgao?
+
+```{r}
+reclamacoes %>%
+    ggplot(aes(x = orgao,
+               y = reclamacao.length,
+               colour = orgao)) +
+    geom_jitter()
+```
+
+Vemos que a maioria das reclamações dos dois órgãos estão numa faixa parecidade de tamanho, mas que a *ANAC* possui algumas reclações de maior tamanho.
