@@ -98,9 +98,18 @@ reclamacoes_l = reclamacoes_l %>% mutate(orgao.dummy = if_else(orgao == "anac-ag
 #Você pode também criar uma variável dummy para o órgao (se anac ou inss)
 
 ggpairs(reclamacoes_l %>% select(insatisfacao, avaliadores, range.avaliacoes, comprimento_reclamacao, palavras, polaridade_normalizada, erro, lexico.dummy, orgao.dummy))
-lm1 = lm(erro ~ lexico.dummy, data = reclamacoes_l)
-summary(lm1)
+lm1 = lm(erro ~ lexico.dummy + insatisfacao, data = reclamacoes_l)
 tidy(lm1, conf.int = TRUE, conf.level = 0.95)
+glance(lm1)
+
+reclamacoes_l %>% 
+    add_predictions(model = lm1) %>% 
+    ggplot(aes(x = insatisfacao,
+               y = erro)) +
+    geom_point(alpha = .4) +
+    facet_wrap(~lexico.dummy) +
+    geom_line(aes(y = pred), colour = "red")
+
 ```
 
 ```{r}
